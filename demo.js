@@ -64,6 +64,7 @@ function move() {
     if (wallDetect(obj)) obj.speed[0] *= -1;
     if (collisionDetect()) {
       bubbles[newBubble.id] = newBubble;
+      if (checkNeighbors(newBubble).length >= 2) console.log("WOOO")
       movingObjects = [];
       loadBubble();
     }
@@ -75,8 +76,16 @@ function move() {
   })
 }
 
-checkNeighbors() {
-  newBubble.neighbors.forEach
+function checkNeighbors(bubble, skip = []) {
+  sameColorNeighbors = [];
+  bubble.neighbors.forEach((neighbor) => {
+    if (bubble.color === bubbles[neighbor].color && !skip.includes(neighbor)) {
+      sameColorNeighbors.push(neighbor)
+      skip.push(bubble.id)
+      sameColorNeighbors = sameColorNeighbors.concat(checkNeighbors(bubbles[neighbor], skip))
+    }
+  })
+  return sameColorNeighbors;
 }
 
 function collisionDetect() {
@@ -107,15 +116,15 @@ function wallDetect() {
 }
 
 function calculateXSpeed() {
-  if (cannon.rotation <= -45) return -5;
-  else if (cannon.rotation >= 45) return 5;
-  else return (cannon.rotation / 45) * 5;
+  if (cannon.rotation <= -45) return -10;
+  else if (cannon.rotation >= 45) return 10;
+  else return (cannon.rotation / 45) * 10;
 }
 
 function calculateYSpeed() {
-  if (cannon.rotation >= -45 && cannon.rotation <= 45) return -5;
-  else if (cannon.rotation < -45) return ((90 + cannon.rotation) / 45) * -5;
-  else return ((90 - cannon.rotation) / 45) * -5;
+  if (cannon.rotation >= -45 && cannon.rotation <= 45) return -10;
+  else if (cannon.rotation < -45) return ((90 + cannon.rotation) / 45) * -10;
+  else return ((90 - cannon.rotation) / 45) * -10;
 }
 
 function fireBubble() {
