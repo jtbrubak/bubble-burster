@@ -3,14 +3,38 @@ BUBBLE_COLORS = { 1: 'yellow', 2: 'gray', 3: 'red', 4: 'purple',
 
 function init() {
   stage = new createjs.Stage("demoCanvas");
+  title = new createjs.Text("Bubble Burster", "36px Courier", "white");
+  play = new createjs.Text("PLAY", "36px Courier", "white");
+  stage.enableMouseOver();
+  play.addEventListener("mouseover", playMouseover);
+  play.addEventListener("mouseout", playMouseout);
+  play.addEventListener("click", startGame);
+  title.x = 50;
+  title.y = 200;
+  play.x = 155;
+  play.y = 300;
+  stage.addChild(title);
+  stage.addChild(play);
+  stage.update();
+}
+
+function playMouseover() {
+  play.color = "green";
+  stage.update();
+}
+
+function playMouseout() {
+  play.color = "white";
+  stage.update();
 }
 
 function startGame() {
+  stage.removeAllChildren();
   keys = {};
   bubbleCount = 0;
   bubbles = {};
   movingObjects = [];
-  addCannon();
+  loadCannon();
   loadBubble();
   createjs.Ticker.addEventListener("tick", () => tick());
   createjs.Ticker.setFPS(60);
@@ -19,7 +43,7 @@ function startGame() {
   stage.update();
 }
 
-function addCannon() {
+function loadCannon() {
   cannon = new createjs.Bitmap("./sprites/cannon.png");
   cannon.x = 200;
   cannon.y = 485;
