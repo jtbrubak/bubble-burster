@@ -1,5 +1,5 @@
-BUBBLE_COLORS = { 1: 'yellow', 2: 'gray', 3: 'red', 4: 'purple',
-                  5: 'orange', 6: 'green', 7: 'blue', 8: 'black'};
+BUBBLE_COLORS = { 1: 'yellow', 2: 'gray', 3: 'red',
+                  4: 'purple', 5: 'orange', 6: 'green'};
 
 function init() {
   stage = new createjs.Stage("demoCanvas");
@@ -34,6 +34,7 @@ function startGame() {
   bubbleCount = 0;
   bubbles = {};
   movingObjects = [];
+  this.setupBubbles();
   loadCannon();
   loadBubble();
   createjs.Ticker.addEventListener("tick", () => tick());
@@ -41,6 +42,26 @@ function startGame() {
   this.document.onkeydown = keydown;
   this.document.onkeyup = keyup;
   stage.update();
+}
+
+function setupBubbles() {
+  for (x = 0; x < 1; x++) {
+    for (y = 0; y < 12; y++) {
+      let bubble = Bubble(1);
+      bubble.x = y * 33;
+      bubble.y = x * 33;
+      setupNeighbors(bubble);
+      bubbles[bubble.id] = bubble;
+      stage.addChild(bubble);
+    }
+  }
+}
+
+function setupNeighbors(bubble) {
+  if (bubble.id % 12 !== 0) { bubble.neighbors.push(bubble.id - 1) }
+  if (bubble.id % 12 !== 11) { bubble.neighbors.push(bubble.id + 1) }
+  // if (bubble.id > 11) { bubble.neighbors.push(bubble.id - 12) }
+  // if (bubble.id < 48) { bubble.neighbors.push(bubble.id + 12) }
 }
 
 function loadCannon() {
@@ -71,8 +92,8 @@ function Bubble(num) {
 }
 
 function randomBubble() {
-  return Bubble(Math.floor(Math.random() * (7 - 1)) + 1);
-  // return Bubble(1)
+  // return Bubble(Math.floor(Math.random() * (7 - 1)) + 1);
+  return Bubble(1)
 }
 
 function loadBubble() {
@@ -111,13 +132,20 @@ function destroyBubbles(destroy) {
     stage.removeChild(bubbles[bubble])
     delete bubbles[bubble]
   })
+  debugger
+  if (Object.keys(bubbles).length === 0) { endGame(); }
 }
 
 function removeNeighbors(bubble) {
-  bubbles[bubble].neighbors.forEach(neighbor => {
-    let i = bubbles[neighbor].neighbors.indexOf(bubble)
-    bubbles[neighbor].neighbors.splice(i, 1)
-  })
+  if (bubbles[bubble]) {
+    bubbles[bubble].neighbors.forEach(neighbor => {
+      if (bubbles[neighbor]) {
+        let i = bubbles[neighbor].neighbors.indexOf(bubble)
+        bubbles[neighbor].neighbors.splice(i, 1)
+      }
+    })
+  }
+
 }
 
 function checkNeighbors(bubble, skip = []) {
@@ -175,6 +203,11 @@ function fireBubble() {
   newBubble.speed = [calculateXSpeed(), calculateYSpeed()];
   movingObjects.push(newBubble);
   createjs.Ticker.setFPS(200);
+}
+
+function endGame() {
+  debugger
+  stage.removeAllChildren();
 }
 
 function tick() {
