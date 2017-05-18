@@ -1,7 +1,13 @@
-BUBBLE_COLORS = { 1: 'yellow', 2: 'gray', 3: 'red',
-                  4: 'purple', 5: 'orange', 6: 'green'};
-
 function init() {
+  main = new Howl({
+    src: ['./sounds/main.mp3'],
+    loop: true,
+    volume: 1.0
+  });
+  end = new Howl({
+    src: ['./sounds/end.mp3'],
+    volume: 1.0
+  });
   stage = new createjs.Stage("demoCanvas");
   title = new createjs.Text("Bubble Burster", "36px Courier", "white");
   play = new createjs.Text("PLAY", "36px Courier", "white");
@@ -29,11 +35,15 @@ function playMouseout() {
 }
 
 function startGame() {
+  main.play();
   stage.removeAllChildren();
   keys = {};
+  colorsRemaining = { "yellow": 0, "red": 0, "purple": 0,
+                      "orange": 0, "green": 0, "gray": 0 };
   bubbleCount = 0;
   bubbles = {};
   movingObjects = [];
+  this.setupLine();
   this.setupBubbles();
   loadCannon();
   loadBubble();
@@ -44,15 +54,36 @@ function startGame() {
   stage.update();
 }
 
+function setupLine() {
+  g = new createjs.Graphics();
+  g.setStrokeStyle(1);
+  g.beginStroke("white");
+  g.moveTo(0, 413).lineTo(400, 413);
+  line = new createjs.Shape(g);
+  stage.addChild(line);
+}
+
 function setupBubbles() {
-  for (x = 0; x < 1; x++) {
+  colorArray = Object.keys(colorsRemaining);
+  for (x = 0; x < 5; x++) {
     for (y = 0; y < 12; y++) {
-      let bubble = Bubble(1);
+      let bubble = randomBubble();
       bubble.x = y * 33;
       bubble.y = x * 33;
+      colorsRemaining[bubble.color] += 1;
       setupNeighbors(bubble);
       bubbles[bubble.id] = bubble;
       stage.addChild(bubble);
+    }
+  }
+  deleteMissingColors();
+}
+
+function deleteMissingColors() {
+  colorArray = Object.keys(colorsRemaining);
+  for (i = 0; i < colorArray.length; i++) {
+    if (colorsRemaining[colorArray[i]] === 0)  {
+      delete colorsRemaining[colorArray[i]];
     }
   }
 }
@@ -60,8 +91,8 @@ function setupBubbles() {
 function setupNeighbors(bubble) {
   if (bubble.id % 12 !== 0) { bubble.neighbors.push(bubble.id - 1) }
   if (bubble.id % 12 !== 11) { bubble.neighbors.push(bubble.id + 1) }
-  // if (bubble.id > 11) { bubble.neighbors.push(bubble.id - 12) }
-  // if (bubble.id < 48) { bubble.neighbors.push(bubble.id + 12) }
+  if (bubble.id > 11) { bubble.neighbors.push(bubble.id - 12) }
+  if (bubble.id < 48) { bubble.neighbors.push(bubble.id + 12) }
 }
 
 function loadCannon() {
@@ -82,9 +113,9 @@ function keyup(event) {
     delete keys[event.keyCode];
 }
 
-function Bubble(num) {
-  bubble = new createjs.Bitmap(`./sprites/bubbles/${num}.png`);
-  bubble.color = BUBBLE_COLORS[num];
+function Bubble(color) {
+  bubble = new createjs.Bitmap(`./sprites/bubbles/${color}.png`);
+  bubble.color = color;
   bubble.id = bubbleCount;
   bubble.neighbors = [];
   bubbleCount += 1;
@@ -92,8 +123,8 @@ function Bubble(num) {
 }
 
 function randomBubble() {
-  // return Bubble(Math.floor(Math.random() * (7 - 1)) + 1);
-  return Bubble(1)
+  rand = Math.floor(Math.random() * Object.keys(colorsRemaining).length)
+  return Bubble(Object.keys(colorsRemaining)[rand]);
 }
 
 function loadBubble() {
@@ -128,12 +159,14 @@ function move() {
 
 function destroyBubbles(destroy) {
   destroy.forEach((bubble) => {
-    removeNeighbors(bubble)
-    stage.removeChild(bubbles[bubble])
-    delete bubbles[bubble]
+    if (bubbles[bubble]) {
+      removeNeighbors(bubble)
+      colorsRemaining[bubbles[bubble].color] -= 1;
+      stage.removeChild(bubbles[bubble])
+      delete bubbles[bubble]
+    }
   })
-  debugger
-  if (Object.keys(bubbles).length === 0) { endGame(); }
+  deleteMissingColors();
 }
 
 function removeNeighbors(bubble) {
@@ -145,7 +178,6 @@ function removeNeighbors(bubble) {
       }
     })
   }
-
 }
 
 function checkNeighbors(bubble, skip = []) {
@@ -201,13 +233,41 @@ function calculateYSpeed() {
 
 function fireBubble() {
   newBubble.speed = [calculateXSpeed(), calculateYSpeed()];
+  colorsRemaining[newBubble.color] += 1;
   movingObjects.push(newBubble);
   createjs.Ticker.setFPS(200);
 }
 
-function endGame() {
+function endGame(status) {
+  main.stop();
   debugger
+  end.play();
+  createjs.Ticker.removeAllEventListeners()
   stage.removeAllChildren();
+  title = new createjs.Text(`YOU ${status}`, "36px Courier", "white");
+  title.x = status === "LOSE" ? 110 : 120;
+  title.y = 200;
+  stage.addChild(title);
+  renderPlayAgain();
+  stage.update();
+}
+
+function renderPlayAgain() {
+  play = new createjs.Text("PLAY AGAIN?", "36px Courier", "white");
+  play.x = 80;
+  play.y = 300;
+  play.addEventListener("mouseover", playMouseover);
+  play.addEventListener("mouseout", playMouseout);
+  play.addEventListener("click", startGame);
+  stage.addChild(play);
+}
+
+function lineBreach() {
+  let breach = false;
+  Object.keys(bubbles).forEach((bubble) => {
+    if (bubbles[bubble].y >= 380) { breach = true; }
+  });
+  return breach;
 }
 
 function tick() {
@@ -216,4 +276,9 @@ function tick() {
   if (keys[38]) cannon.rotation = 0;
   move();
   stage.update();
+  if (Object.keys(bubbles).length === 0) {
+    endGame("WIN");
+  } else if (lineBreach()) {
+    endGame("LOSE");
+  }
 }
