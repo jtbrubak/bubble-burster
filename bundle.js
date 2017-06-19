@@ -98,20 +98,25 @@
 	    this.startGame = this.startGame.bind(this);
 	    this.keydown = this.keydown.bind(this);
 	    this.keyup = this.keyup.bind(this);
-	    this.keys = {};
-	    this.colorsRemaining = { "yellow": 0, "red": 0, "purple": 0,
-	      "orange": 0, "green": 0, "gray": 0 };
-	    this.bubbleCount = 0;
-	    this.bubbles = {};
-	    this.movingObjects = [];
-	    this.newBubble = null;
 	  }
 	
 	  _createClass(Game, [{
+	    key: "setupVariables",
+	    value: function setupVariables() {
+	      this.keys = {};
+	      this.colorsRemaining = { "yellow": 0, "red": 0, "purple": 0,
+	        "orange": 0, "green": 0, "gray": 0 };
+	      this.bubbleCount = 0;
+	      this.bubbles = {};
+	      this.movingObjects = [];
+	      this.newBubble = null;
+	    }
+	  }, {
 	    key: "startGame",
 	    value: function startGame() {
 	      var _this = this;
 	
+	      this.setupVariables();
 	      this.stage.removeAllChildren();
 	      this.setupLine();
 	      this.setupBubbles();
@@ -305,9 +310,10 @@
 	  }, {
 	    key: "endGame",
 	    value: function endGame(status) {
+	      debugger;
 	      createjs.Ticker.removeAllEventListeners();
 	      this.stage.removeAllChildren();
-	      title = new createjs.Text("YOU " + status, "36px Courier", "white");
+	      var title = new createjs.Text("YOU " + status, "36px Courier", "white");
 	      title.x = status === "LOSE" ? 110 : 120;
 	      title.y = 200;
 	      this.stage.addChild(title);
@@ -320,8 +326,6 @@
 	      var play = new createjs.Text("PLAY AGAIN?", "36px Courier", "white");
 	      play.x = 80;
 	      play.y = 300;
-	      play.addEventListener("mouseover", playMouseover);
-	      play.addEventListener("mouseout", playMouseout);
 	      play.addEventListener("click", this.startGame);
 	      this.stage.addChild(play);
 	    }
@@ -332,7 +336,7 @@
 	
 	      var breach = false;
 	      Object.keys(this.bubbles).forEach(function (bubble) {
-	        if (_this7.bubbles[bubble].y >= 380) {
+	        if (_this7.bubbles[bubble].sprite.y >= 380) {
 	          breach = true;
 	        }
 	      }, this);

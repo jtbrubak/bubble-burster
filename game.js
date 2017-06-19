@@ -9,6 +9,9 @@ class Game {
     this.startGame = this.startGame.bind(this)
     this.keydown = this.keydown.bind(this)
     this.keyup = this.keyup.bind(this)
+  }
+
+  setupVariables() {
     this.keys = {};
     this.colorsRemaining = { "yellow": 0, "red": 0, "purple": 0,
                              "orange": 0, "green": 0, "gray": 0 };
@@ -19,6 +22,7 @@ class Game {
   }
 
   startGame() {
+    this.setupVariables();
     this.stage.removeAllChildren();
     this.setupLine();
     this.setupBubbles();
@@ -175,9 +179,10 @@ class Game {
   }
 
   endGame(status) {
+    debugger
     createjs.Ticker.removeAllEventListeners()
     this.stage.removeAllChildren();
-    title = new createjs.Text(`YOU ${status}`, "36px Courier", "white");
+    var title = new createjs.Text(`YOU ${status}`, "36px Courier", "white");
     title.x = status === "LOSE" ? 110 : 120;
     title.y = 200;
     this.stage.addChild(title);
@@ -189,8 +194,6 @@ class Game {
     var play = new createjs.Text("PLAY AGAIN?", "36px Courier", "white");
     play.x = 80;
     play.y = 300;
-    play.addEventListener("mouseover", playMouseover);
-    play.addEventListener("mouseout", playMouseout);
     play.addEventListener("click", this.startGame);
     this.stage.addChild(play);
   }
@@ -198,7 +201,7 @@ class Game {
   lineBreach() {
     let breach = false;
     Object.keys(this.bubbles).forEach((bubble) => {
-      if (this.bubbles[bubble].y >= 380) { breach = true; }
+      if (this.bubbles[bubble].sprite.y >= 380) { breach = true; }
     }, this);
     return breach;
   }
