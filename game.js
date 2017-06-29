@@ -1,5 +1,6 @@
-const Bubble = require("./bubble.js");
+const Bubble = require("./bubble.js")
 const Util = require("./util.js")
+const Board = require("./board.js")
 
 class Game {
 
@@ -19,6 +20,7 @@ class Game {
     this.bubbles = {};
     this.movingObjects = [];
     this.newBubble = null;
+    this.board = new Board();
   }
 
   startGame() {
@@ -47,9 +49,12 @@ class Game {
   setupBubbles() {
     const colorArray = Object.keys(this.colorsRemaining);
     for (let x = 0; x < 5; x++) {
-      for (let y = 0; y < 12; y++) {
+      let rowLength = x % 2 === 0 ? 12 : 11
+      let offset = x % 2 === 0 ? 0 : 16
+      debugger
+      for (let y = 0; y < rowLength; y++) {
         var rand = Math.floor(Math.random() * Object.keys(this.colorsRemaining).length);
-        var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [y*33, x*33], this.bubbleCount);
+        var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [y*33, offset + (x*33)], this.bubbleCount);
         this.colorsRemaining[bubble.color] += 1;
         this.setupNeighbors(bubble);
         this.bubbles[bubble.id] = bubble;

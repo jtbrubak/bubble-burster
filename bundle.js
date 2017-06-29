@@ -88,6 +88,7 @@
 	
 	var Bubble = __webpack_require__(2);
 	var Util = __webpack_require__(3);
+	var Board = __webpack_require__(4);
 	
 	var Game = function () {
 	  function Game(stage) {
@@ -110,6 +111,7 @@
 	      this.bubbles = {};
 	      this.movingObjects = [];
 	      this.newBubble = null;
+	      this.board = new Board();
 	    }
 	  }, {
 	    key: "startGame",
@@ -145,9 +147,12 @@
 	    value: function setupBubbles() {
 	      var colorArray = Object.keys(this.colorsRemaining);
 	      for (var x = 0; x < 5; x++) {
-	        for (var y = 0; y < 12; y++) {
+	        var rowLength = x % 2 === 0 ? 12 : 11;
+	        var offset = x % 2 === 0 ? 0 : 16;
+	        debugger;
+	        for (var y = 0; y < rowLength; y++) {
 	          var rand = Math.floor(Math.random() * Object.keys(this.colorsRemaining).length);
-	          var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [y * 33, x * 33], this.bubbleCount);
+	          var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [y * 33, offset + x * 33], this.bubbleCount);
 	          this.colorsRemaining[bubble.color] += 1;
 	          this.setupNeighbors(bubble);
 	          this.bubbles[bubble.id] = bubble;
@@ -409,6 +414,62 @@
 	};
 	
 	module.exports = Util;
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+	"use strict";
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	//12 across, 13 down
+	
+	var Board = function () {
+	  function Board() {
+	    _classCallCheck(this, Board);
+	
+	    this.grid = [];
+	  }
+	
+	  _createClass(Board, [{
+	    key: "setupGrid",
+	    value: function setupGrid() {
+	      for (var row = 0; row < 13; row++) {
+	        this.grid[row] = [];
+	        if (row % 2 === 0) {
+	          this.setupEvenRow(row);
+	        } else {
+	          this.setupOddRow(row);
+	        }
+	      }
+	    }
+	  }, {
+	    key: "setupEvenRow",
+	    value: function setupEvenRow(y) {
+	      for (var col = 0; col < 12; col++) {
+	        this.grid[row][col].x = col * 33;
+	        this.grid[row][col].y = y * 33;
+	        this.grid[row][col].bubble = null;
+	      }
+	    }
+	  }, {
+	    key: "setupOddRow",
+	    value: function setupOddRow(y) {
+	      for (var col = 0; col < 12; col++) {
+	        this.grid[row][col].x = col * 33;
+	        this.grid[row][col].y = y * 33 + 16;
+	        this.grid[row][col].bubble = null;
+	      }
+	    }
+	  }]);
+	
+	  return Board;
+	}();
+	
+	module.exports = Board;
 
 /***/ })
 /******/ ]);
