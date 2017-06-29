@@ -149,10 +149,9 @@
 	      for (var x = 0; x < 5; x++) {
 	        var rowLength = x % 2 === 0 ? 12 : 11;
 	        var offset = x % 2 === 0 ? 0 : 16;
-	        debugger;
 	        for (var y = 0; y < rowLength; y++) {
 	          var rand = Math.floor(Math.random() * Object.keys(this.colorsRemaining).length);
-	          var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [offset + y * 33, x * 32], this.bubbleCount);
+	          var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [y * 33, x * 33], this.bubbleCount);
 	          this.colorsRemaining[bubble.color] += 1;
 	          this.setupNeighbors(bubble);
 	          this.bubbles[bubble.id] = bubble;
