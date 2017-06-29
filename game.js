@@ -54,7 +54,7 @@ class Game {
       debugger
       for (let y = 0; y < rowLength; y++) {
         var rand = Math.floor(Math.random() * Object.keys(this.colorsRemaining).length);
-        var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [y*33, offset + (x*33)], this.bubbleCount);
+        var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [offset + (y*33), x*32], this.bubbleCount);
         this.colorsRemaining[bubble.color] += 1;
         this.setupNeighbors(bubble);
         this.bubbles[bubble.id] = bubble;
