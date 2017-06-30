@@ -151,7 +151,8 @@
 	        var offset = x % 2 === 0 ? 0 : 16;
 	        for (var y = 0; y < rowLength; y++) {
 	          var rand = Math.floor(Math.random() * Object.keys(this.colorsRemaining).length);
-	          var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [y * 33, x * 33], this.bubbleCount);
+	          var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [offset + y * 33, x * 33], this.bubbleCount);
+	          bubble.pos = [x, y];
 	          this.colorsRemaining[bubble.color] += 1;
 	          this.setupNeighbors(bubble);
 	          this.bubbles[bubble.id] = bubble;
@@ -174,10 +175,13 @@
 	  }, {
 	    key: "setupNeighbors",
 	    value: function setupNeighbors(bubble) {
-	      if (bubble.id % 12 !== 0) {
+	      if (bubble.pos[1] !== 0) {
 	        bubble.neighbors.push(bubble.id - 1);
 	      }
-	      if (bubble.id % 12 !== 11) {
+	      if (bubble.pos[0] % 2 == 0 && bubble.pos[1] !== 11) {
+	        bubble.neighbors.push(bubble.id + 1);
+	      }
+	      if (bubble.pos[0] % 2 == 1 && bubble.pos[1] !== 10) {
 	        bubble.neighbors.push(bubble.id + 1);
 	      }
 	      if (bubble.id > 11) {
@@ -384,6 +388,7 @@
 	  this.neighbors = [];
 	  this.sprite.x = pos[0];
 	  this.sprite.y = pos[1];
+	  this.pos = null;
 	};
 	
 	module.exports = Bubble;

@@ -6,6 +6,7 @@ class Bubble {
     this.neighbors = [];
     this.sprite.x = pos[0];
     this.sprite.y = pos[1];
+    this.pos = null;
   }
 }
 
