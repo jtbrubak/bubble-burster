@@ -55,6 +55,7 @@ class Game {
         var rand = Math.floor(Math.random() * Object.keys(this.colorsRemaining).length);
         var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [offset + (y*33), x*33], this.bubbleCount);
         bubble.pos = [x, y]
+        this.board.grid[x][y].bubble = bubble.id
         this.colorsRemaining[bubble.color] += 1;
         this.setupNeighbors(bubble);
         this.bubbles[bubble.id] = bubble;
@@ -75,7 +76,7 @@ class Game {
   }
 
   setupNeighbors(bubble) {
-    if (bubble.pos[1] !== 0) { bubble.neighbors.push(bubble.id - 1) }
+    if (bubble.pos[0] !== 0) { bubble.neighbors.push(bubble.id - 1) }
     if (bubble.pos[0] % 2 == 0 && bubble.pos[1] !== 11) { bubble.neighbors.push(bubble.id + 1) }
     if (bubble.pos[0] % 2 == 1 && bubble.pos[1] !== 10) { bubble.neighbors.push(bubble.id + 1) }
     if (bubble.id > 11) { bubble.neighbors.push(bubble.id - 12) }

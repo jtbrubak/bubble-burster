@@ -1,4 +1,7 @@
 const Util = {
+  EVEN_DELTAS = [[-1, 0], [-1, -1], [0, -1], [0, 1], [1, -1], [1, 0]]
+  ODD_DELTAS = [[-1, 0], [-1, 1], [0, -1], [0, 1], [1, 0], [1, 1]]
+
   ceilingDetect(bubble) {
     if (bubble.sprite.y <= 0) {
       bubble.sprite.y = 0
