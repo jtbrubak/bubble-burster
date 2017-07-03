@@ -13,18 +13,20 @@ class Board {
     }
   }
 
-  setupEvenRow(y) {
+  setupEvenRow(row) {
     for (var col = 0; col < 12; col++) {
+      this.grid[row][col] = {}
       this.grid[row][col].x = col * 33
-      this.grid[row][col].y = y * 33
+      this.grid[row][col].y = row * 33
       this.grid[row][col].bubble = null
     }
   }
 
-  setupOddRow(y) {
+  setupOddRow(row) {
     for (var col = 0; col < 12; col++) {
+      this.grid[row][col] = {}
       this.grid[row][col].x = col * 33
-      this.grid[row][col].y = (y * 33) + 16
+      this.grid[row][col].y = (row * 33) + 16
       this.grid[row][col].bubble = null
     }
   }

@@ -99,6 +99,8 @@
 	    this.startGame = this.startGame.bind(this);
 	    this.keydown = this.keydown.bind(this);
 	    this.keyup = this.keyup.bind(this);
+	    this.checkNeighbors = this.checkNeighbors.bind(this);
+	    this.collisionDetect = this.collisionDetect.bind(this);
 	  }
 	
 	  _createClass(Game, [{
@@ -121,6 +123,7 @@
 	      this.setupVariables();
 	      this.stage.removeAllChildren();
 	      this.setupLine();
+	      this.board.setupGrid();
 	      this.setupBubbles();
 	      this.loadCannon();
 	      this.loadBubble();
@@ -153,6 +156,7 @@
 	          var rand = Math.floor(Math.random() * Object.keys(this.colorsRemaining).length);
 	          var bubble = new Bubble(Object.keys(this.colorsRemaining)[rand], [offset + y * 33, x * 33], this.bubbleCount);
 	          bubble.pos = [x, y];
+	          this.board.grid[x][y].bubble = bubble.id;
 	          this.colorsRemaining[bubble.color] += 1;
 	          this.setupNeighbors(bubble);
 	          this.bubbles[bubble.id] = bubble;
@@ -175,22 +179,41 @@
 	  }, {
 	    key: "setupNeighbors",
 	    value: function setupNeighbors(bubble) {
+	      debugger;
+	      var rowLength = bubble.pos[0] % 2 === 0 ? 11 : 10;
 	      if (bubble.pos[1] !== 0) {
 	        bubble.neighbors.push(bubble.id - 1);
 	      }
-	      if (bubble.pos[0] % 2 == 0 && bubble.pos[1] !== 11) {
+	      if (bubble.pos[1] !== rowLength) {
 	        bubble.neighbors.push(bubble.id + 1);
 	      }
-	      if (bubble.pos[0] % 2 == 1 && bubble.pos[1] !== 10) {
-	        bubble.neighbors.push(bubble.id + 1);
+	      if (bubble.pos[0] !== 0) {
+	        if (bubble.pos[1] !== rowLength || rowLength === 10) {
+	          bubble.neighbors.push(bubble.id - 11);
+	        }
+	        if (bubble.pos[1] !== 0 || rowLength === 10) {
+	          bubble.neighbors.push(bubble.id - 12);
+	        }
 	      }
-	      if (bubble.id > 11) {
-	        bubble.neighbors.push(bubble.id - 12);
-	      }
-	      if (bubble.id < 48) {
-	        bubble.neighbors.push(bubble.id + 12);
+	      if (bubble.pos[0] !== 4) {
+	        if (bubble.pos[1] !== rowLength || rowLength === 10) {
+	          bubble.neighbors.push(bubble.id + 12);
+	        }
+	        if (bubble.pos[1] !== 0 || rowLength === 10) {
+	          bubble.neighbors.push(bubble.id + 11);
+	        }
 	      }
 	    }
+	
+	    // setupNeighbors(bubble) {
+	    //   var deltas = bubble.pos[0] % 2 === 0) ? Util.EVEN_DELTAS : Util.ODD_DELTAS
+	    //   deltas.foreach((delta) => {
+	    //     var neighborPos = [(bubble.pos[0] + delta[0]), bubble.pos[1] + delta[1])]
+	    //     if (typeof this.board.grid[neighborPos[0]][neighborPos[1]] === 'undefined') { continue }
+	    //     bubble.neighbors.push(this.board.grid[neighborPos[0]][neighborPos[1]].bubble)
+	    //   })
+	    // }
+	
 	  }, {
 	    key: "loadCannon",
 	    value: function loadCannon() {
@@ -283,13 +306,14 @@
 	      var skip = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 	
 	      var sameColorNeighbors = [];
+	      debugger;
 	      bubble.neighbors.forEach(function (neighbor) {
 	        if (bubble.color === _this5.bubbles[neighbor].color && !skip.includes(neighbor)) {
 	          sameColorNeighbors.push(neighbor);
 	          skip.push(bubble.id);
 	          sameColorNeighbors = sameColorNeighbors.concat(_this5.checkNeighbors(_this5.bubbles[neighbor], skip));
 	        }
-	      });
+	      }, this);
 	      return sameColorNeighbors;
 	    }
 	  }, {
@@ -400,6 +424,12 @@
 	"use strict";
 	
 	var Util = {
+	  evenDeltas: function evenDeltas() {
+	    return [[-1, 0], [-1, -1], [0, -1], [0, 1], [1, -1], [1, 0]];
+	  },
+	  oddDeltas: function oddDeltas() {
+	    return [[-1, 0], [-1, 1], [0, -1], [0, 1], [1, 0], [1, 1]];
+	  },
 	  ceilingDetect: function ceilingDetect(bubble) {
 	    if (bubble.sprite.y <= 0) {
 	      bubble.sprite.y = 0;
@@ -452,19 +482,21 @@
 	    }
 	  }, {
 	    key: "setupEvenRow",
-	    value: function setupEvenRow(y) {
+	    value: function setupEvenRow(row) {
 	      for (var col = 0; col < 12; col++) {
+	        this.grid[row][col] = {};
 	        this.grid[row][col].x = col * 33;
-	        this.grid[row][col].y = y * 33;
+	        this.grid[row][col].y = row * 33;
 	        this.grid[row][col].bubble = null;
 	      }
 	    }
 	  }, {
 	    key: "setupOddRow",
-	    value: function setupOddRow(y) {
+	    value: function setupOddRow(row) {
 	      for (var col = 0; col < 12; col++) {
+	        this.grid[row][col] = {};
 	        this.grid[row][col].x = col * 33;
-	        this.grid[row][col].y = y * 33 + 16;
+	        this.grid[row][col].y = row * 33 + 16;
 	        this.grid[row][col].bubble = null;
 	      }
 	    }
