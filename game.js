@@ -150,6 +150,10 @@ class Game {
     }, this)
   }
 
+  gridSnap() {
+    
+  }
+
   destroyBubbles(destroy) {
     destroy.forEach((bubble) => {
       if (this.bubbles[bubble]) {
