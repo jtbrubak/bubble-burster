@@ -17,7 +17,7 @@ class Game {
   setupVariables() {
     this.keys = {};
     this.colorsRemaining = { "yellow": 0, "red": 0, "purple": 0,
-                             "orange": 0, "green": 0, "gray": 0 };
+                             "blue": 0, "green": 0, "gray": 0 };
     this.bubbleCount = 0;
     this.bubbles = {};
     this.movingObjects = [];
@@ -151,7 +151,7 @@ class Game {
   }
 
   gridSnap() {
-    
+
   }
 
   destroyBubbles(destroy) {
