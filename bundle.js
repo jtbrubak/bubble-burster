@@ -45,9 +45,9 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	var Game = __webpack_require__(1);
-
+	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var stage = new createjs.Stage("demoCanvas");
 	  var game = new Game(stage);
@@ -64,12 +64,12 @@
 	  stage.addChild(title);
 	  stage.addChild(play);
 	  stage.update();
-
+	
 	  function playMouseover() {
 	    play.color = "green";
 	    stage.update();
 	  }
-
+	
 	  function playMouseout() {
 	    play.color = "white";
 	    stage.update();
@@ -81,19 +81,19 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 	"use strict";
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var Bubble = __webpack_require__(2);
 	var Util = __webpack_require__(3);
 	var Board = __webpack_require__(4);
-
+	
 	var Game = function () {
 	  function Game(stage) {
 	    _classCallCheck(this, Game);
-
+	
 	    this.stage = stage;
 	    this.move = this.move.bind(this);
 	    this.startGame = this.startGame.bind(this);
@@ -102,7 +102,7 @@
 	    this.checkNeighbors = this.checkNeighbors.bind(this);
 	    this.collisionDetect = this.collisionDetect.bind(this);
 	  }
-
+	
 	  _createClass(Game, [{
 	    key: "setupVariables",
 	    value: function setupVariables() {
@@ -119,7 +119,7 @@
 	    key: "startGame",
 	    value: function startGame() {
 	      var _this = this;
-
+	
 	      this.setupVariables();
 	      this.stage.removeAllChildren();
 	      this.setupLine();
@@ -204,7 +204,7 @@
 	        }
 	      }
 	    }
-
+	
 	    // setupNeighbors(bubble) {
 	    //   var deltas = bubble.pos[0] % 2 === 0) ? Util.EVEN_DELTAS : Util.ODD_DELTAS
 	    //   deltas.foreach((delta) => {
@@ -213,7 +213,7 @@
 	    //     bubble.neighbors.push(this.board.grid[neighborPos[0]][neighborPos[1]].bubble)
 	    //   })
 	    // }
-
+	
 	  }, {
 	    key: "loadCannon",
 	    value: function loadCannon() {
@@ -247,7 +247,7 @@
 	    key: "move",
 	    value: function move() {
 	      var _this2 = this;
-
+	
 	      this.movingObjects.forEach(function (obj) {
 	        obj.sprite.x += obj.speed[0];
 	        obj.sprite.y += obj.speed[1];
@@ -270,10 +270,13 @@
 	      }, this);
 	    }
 	  }, {
+	    key: "gridSnap",
+	    value: function gridSnap() {}
+	  }, {
 	    key: "destroyBubbles",
 	    value: function destroyBubbles(destroy) {
 	      var _this3 = this;
-
+	
 	      destroy.forEach(function (bubble) {
 	        if (_this3.bubbles[bubble]) {
 	          _this3.removeNeighbors(bubble);
@@ -288,7 +291,7 @@
 	    key: "removeNeighbors",
 	    value: function removeNeighbors(bubble) {
 	      var _this4 = this;
-
+	
 	      if (this.bubbles[bubble]) {
 	        this.bubbles[bubble].neighbors.forEach(function (neighbor) {
 	          if (_this4.bubbles[neighbor]) {
@@ -302,9 +305,9 @@
 	    key: "checkNeighbors",
 	    value: function checkNeighbors(bubble) {
 	      var _this5 = this;
-
+	
 	      var skip = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-
+	
 	      var sameColorNeighbors = [];
 	      debugger;
 	      bubble.neighbors.forEach(function (neighbor) {
@@ -320,7 +323,7 @@
 	    key: "collisionDetect",
 	    value: function collisionDetect() {
 	      var _this6 = this;
-
+	
 	      var collision = false;
 	      Object.values(this.bubbles).forEach(function (bubble) {
 	        if (ndgmr.checkPixelCollision(_this6.newBubble.sprite, bubble.sprite)) {
@@ -365,7 +368,7 @@
 	    key: "lineBreach",
 	    value: function lineBreach() {
 	      var _this7 = this;
-
+	
 	      var breach = false;
 	      Object.keys(this.bubbles).forEach(function (bubble) {
 	        if (_this7.bubbles[bubble].sprite.y >= 380) {
@@ -389,10 +392,10 @@
 	      }
 	    }
 	  }]);
-
+	
 	  return Game;
 	}();
-
+	
 	module.exports = Game;
 
 /***/ }),
@@ -400,12 +403,12 @@
 /***/ (function(module, exports) {
 
 	"use strict";
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	var Bubble = function Bubble(color, pos, id) {
 	  _classCallCheck(this, Bubble);
-
+	
 	  this.sprite = new createjs.Bitmap("./sprites/bubbles/" + color + ".png");
 	  this.color = color;
 	  this.id = id;
@@ -414,7 +417,7 @@
 	  this.sprite.y = pos[1];
 	  this.pos = null;
 	};
-
+	
 	module.exports = Bubble;
 
 /***/ }),
@@ -422,7 +425,7 @@
 /***/ (function(module, exports) {
 
 	"use strict";
-
+	
 	var Util = {
 	  evenDeltas: function evenDeltas() {
 	    return [[-1, 0], [-1, -1], [0, -1], [0, 1], [1, -1], [1, 0]];
@@ -446,7 +449,7 @@
 	    if (cannon.rotation >= -45 && cannon.rotation <= 45) return -4;else if (cannon.rotation < -45) return (90 + cannon.rotation) / 45 * -4;else return (90 - cannon.rotation) / 45 * -4;
 	  }
 	};
-
+	
 	module.exports = Util;
 
 /***/ }),
@@ -454,20 +457,20 @@
 /***/ (function(module, exports) {
 
 	"use strict";
-
+	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
+	
 	//12 across, 13 down
-
+	
 	var Board = function () {
 	  function Board() {
 	    _classCallCheck(this, Board);
-
+	
 	    this.grid = [];
 	  }
-
+	
 	  _createClass(Board, [{
 	    key: "setupGrid",
 	    value: function setupGrid() {
@@ -501,10 +504,10 @@
 	      }
 	    }
 	  }]);
-
+	
 	  return Board;
 	}();
-
+	
 	module.exports = Board;
 
 /***/ })
