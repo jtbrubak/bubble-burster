@@ -79,7 +79,6 @@ class Game {
   }
 
   setupNeighbors(bubble) {
-    debugger
     var rowLength = bubble.pos[0] % 2 === 0 ? 11 : 10
     if (bubble.pos[1] !== 0) { bubble.neighbors.push(bubble.id - 1) }
     if (bubble.pos[1] !== rowLength) { bubble.neighbors.push(bubble.id + 1) }
@@ -152,6 +151,21 @@ class Game {
       var col = Math.round((bubble.sprite.x - 16) / 33)
       bubble.sprite.x = (col * 33) + 16
     }
+    bubble.pos = [row, col]
+    this.board.grid[row][col].bubble = bubble.id
+    this.assignNeighbors(bubble)
+  }
+
+  assignNeighbors(bubble) {
+    var deltas = bubble.pos[1] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas()
+    deltas.forEach((delta) => {
+      var neighborPos = [(bubble.pos[0] + delta[0]), (bubble.pos[1] + delta[1])]
+      var neighborBubble = this.board.grid[neighborPos[0]][neighborPos[1]].bubble
+      if (neighborPos[0] >= 0 && neighborPos[1] >= 0 && neighborBubble !== null) {
+        bubble.neighbors.push(neighborBubble)
+        this.bubbles[neighborBubble].neighbors.push(bubble.id)
+      }
+    })
   }
 
   destroyBubbles(destroy) {
@@ -160,6 +174,8 @@ class Game {
         this.removeNeighbors(bubble)
         this.colorsRemaining[this.bubbles[bubble].color] -= 1;
         this.stage.removeChild(this.bubbles[bubble].sprite)
+        var gridPos = this.bubbles[bubble].pos
+        this.board.grid[gridPos[0]][gridPos[1]].bubble = null
         delete this.bubbles[bubble]
       }
     }, this)
@@ -179,7 +195,6 @@ class Game {
 
   checkNeighbors(bubble, skip = []) {
     var sameColorNeighbors = []
-    debugger
     bubble.neighbors.forEach((neighbor) => {
       if (bubble.color === this.bubbles[neighbor].color && !skip.includes(neighbor)) {
         sameColorNeighbors.push(neighbor)
@@ -194,8 +209,6 @@ class Game {
     let collision = false;
     Object.values(this.bubbles).forEach((bubble) => {
       if (ndgmr.checkPixelCollision(this.newBubble.sprite, bubble.sprite)) {
-        this.newBubble.neighbors.push(bubble.id)
-        bubble.neighbors.push(this.newBubble.id)
         collision = true;
       }
     }, this)

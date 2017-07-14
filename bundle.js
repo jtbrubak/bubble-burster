@@ -179,7 +179,6 @@
 	  }, {
 	    key: "setupNeighbors",
 	    value: function setupNeighbors(bubble) {
-	      debugger;
 	      var rowLength = bubble.pos[0] % 2 === 0 ? 11 : 10;
 	      if (bubble.pos[1] !== 0) {
 	        bubble.neighbors.push(bubble.id - 1);
@@ -272,18 +271,38 @@
 	        var col = Math.round((bubble.sprite.x - 16) / 33);
 	        bubble.sprite.x = col * 33 + 16;
 	      }
+	      bubble.pos = [row, col];
+	      this.board.grid[row][col].bubble = bubble.id;
+	      this.assignNeighbors(bubble);
+	    }
+	  }, {
+	    key: "assignNeighbors",
+	    value: function assignNeighbors(bubble) {
+	      var _this3 = this;
+	
+	      var deltas = bubble.pos[1] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas();
+	      deltas.forEach(function (delta) {
+	        var neighborPos = [bubble.pos[0] + delta[0], bubble.pos[1] + delta[1]];
+	        var neighborBubble = _this3.board.grid[neighborPos[0]][neighborPos[1]].bubble;
+	        if (neighborPos[0] >= 0 && neighborPos[1] >= 0 && neighborBubble !== null) {
+	          bubble.neighbors.push(neighborBubble);
+	          _this3.bubbles[neighborBubble].neighbors.push(bubble.id);
+	        }
+	      });
 	    }
 	  }, {
 	    key: "destroyBubbles",
 	    value: function destroyBubbles(destroy) {
-	      var _this3 = this;
+	      var _this4 = this;
 	
 	      destroy.forEach(function (bubble) {
-	        if (_this3.bubbles[bubble]) {
-	          _this3.removeNeighbors(bubble);
-	          _this3.colorsRemaining[_this3.bubbles[bubble].color] -= 1;
-	          _this3.stage.removeChild(_this3.bubbles[bubble].sprite);
-	          delete _this3.bubbles[bubble];
+	        if (_this4.bubbles[bubble]) {
+	          _this4.removeNeighbors(bubble);
+	          _this4.colorsRemaining[_this4.bubbles[bubble].color] -= 1;
+	          _this4.stage.removeChild(_this4.bubbles[bubble].sprite);
+	          var gridPos = _this4.bubbles[bubble].pos;
+	          _this4.board.grid[gridPos[0]][gridPos[1]].bubble = null;
+	          delete _this4.bubbles[bubble];
 	        }
 	      }, this);
 	      this.deleteMissingColors();
@@ -291,13 +310,13 @@
 	  }, {
 	    key: "removeNeighbors",
 	    value: function removeNeighbors(bubble) {
-	      var _this4 = this;
+	      var _this5 = this;
 	
 	      if (this.bubbles[bubble]) {
 	        this.bubbles[bubble].neighbors.forEach(function (neighbor) {
-	          if (_this4.bubbles[neighbor]) {
-	            var i = _this4.bubbles[neighbor].neighbors.indexOf(bubble);
-	            _this4.bubbles[neighbor].neighbors.splice(i, 1);
+	          if (_this5.bubbles[neighbor]) {
+	            var i = _this5.bubbles[neighbor].neighbors.indexOf(bubble);
+	            _this5.bubbles[neighbor].neighbors.splice(i, 1);
 	          }
 	        });
 	      }
@@ -305,17 +324,16 @@
 	  }, {
 	    key: "checkNeighbors",
 	    value: function checkNeighbors(bubble) {
-	      var _this5 = this;
+	      var _this6 = this;
 	
 	      var skip = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
 	
 	      var sameColorNeighbors = [];
-	      debugger;
 	      bubble.neighbors.forEach(function (neighbor) {
-	        if (bubble.color === _this5.bubbles[neighbor].color && !skip.includes(neighbor)) {
+	        if (bubble.color === _this6.bubbles[neighbor].color && !skip.includes(neighbor)) {
 	          sameColorNeighbors.push(neighbor);
 	          skip.push(bubble.id);
-	          sameColorNeighbors = sameColorNeighbors.concat(_this5.checkNeighbors(_this5.bubbles[neighbor], skip));
+	          sameColorNeighbors = sameColorNeighbors.concat(_this6.checkNeighbors(_this6.bubbles[neighbor], skip));
 	        }
 	      }, this);
 	      return sameColorNeighbors;
@@ -323,13 +341,11 @@
 	  }, {
 	    key: "collisionDetect",
 	    value: function collisionDetect() {
-	      var _this6 = this;
+	      var _this7 = this;
 	
 	      var collision = false;
 	      Object.values(this.bubbles).forEach(function (bubble) {
-	        if (ndgmr.checkPixelCollision(_this6.newBubble.sprite, bubble.sprite)) {
-	          _this6.newBubble.neighbors.push(bubble.id);
-	          bubble.neighbors.push(_this6.newBubble.id);
+	        if (ndgmr.checkPixelCollision(_this7.newBubble.sprite, bubble.sprite)) {
 	          collision = true;
 	        }
 	      }, this);
@@ -368,11 +384,11 @@
 	  }, {
 	    key: "lineBreach",
 	    value: function lineBreach() {
-	      var _this7 = this;
+	      var _this8 = this;
 	
 	      var breach = false;
 	      Object.keys(this.bubbles).forEach(function (bubble) {
-	        if (_this7.bubbles[bubble].sprite.y >= 380) {
+	        if (_this8.bubbles[bubble].sprite.y >= 380) {
 	          breach = true;
 	        }
 	      }, this);
