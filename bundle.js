@@ -204,16 +204,6 @@
 	        }
 	      }
 	    }
-	
-	    // setupNeighbors(bubble) {
-	    //   var deltas = bubble.pos[0] % 2 === 0) ? Util.EVEN_DELTAS : Util.ODD_DELTAS
-	    //   deltas.foreach((delta) => {
-	    //     var neighborPos = [(bubble.pos[0] + delta[0]), bubble.pos[1] + delta[1])]
-	    //     if (typeof this.board.grid[neighborPos[0]][neighborPos[1]] === 'undefined') { continue }
-	    //     bubble.neighbors.push(this.board.grid[neighborPos[0]][neighborPos[1]].bubble)
-	    //   })
-	    // }
-	
 	  }, {
 	    key: "loadCannon",
 	    value: function loadCannon() {
@@ -255,6 +245,7 @@
 	        if (Util.wallDetect(_this2.newBubble)) obj.speed[0] *= -1;
 	        if (_this2.collisionDetect()) {
 	          _this2.bubbles[_this2.newBubble.id] = _this2.newBubble;
+	          _this2.gridSnap(_this2.newBubble);
 	          var destroy = _this2.checkNeighbors(_this2.newBubble).concat([_this2.newBubble.id]);
 	          if (destroy.length >= 3) _this2.destroyBubbles(destroy);
 	          _this2.movingObjects = [];
@@ -271,7 +262,17 @@
 	    }
 	  }, {
 	    key: "gridSnap",
-	    value: function gridSnap() {}
+	    value: function gridSnap(bubble) {
+	      var row = Math.round(bubble.sprite.y / 33);
+	      bubble.sprite.y = row * 33;
+	      if (row % 2 === 0) {
+	        var col = Math.round(bubble.sprite.x / 33);
+	        bubble.sprite.x = col * 33;
+	      } else {
+	        var col = Math.round((bubble.sprite.x - 16) / 33);
+	        bubble.sprite.x = col * 33 + 16;
+	      }
+	    }
 	  }, {
 	    key: "destroyBubbles",
 	    value: function destroyBubbles(destroy) {

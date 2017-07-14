@@ -93,15 +93,6 @@ class Game {
     }
   }
 
-  // setupNeighbors(bubble) {
-  //   var deltas = bubble.pos[0] % 2 === 0) ? Util.EVEN_DELTAS : Util.ODD_DELTAS
-  //   deltas.foreach((delta) => {
-  //     var neighborPos = [(bubble.pos[0] + delta[0]), bubble.pos[1] + delta[1])]
-  //     if (typeof this.board.grid[neighborPos[0]][neighborPos[1]] === 'undefined') { continue }
-  //     bubble.neighbors.push(this.board.grid[neighborPos[0]][neighborPos[1]].bubble)
-  //   })
-  // }
-
   loadCannon() {
     this.cannon = new createjs.Bitmap("./sprites/cannon.png");
     this.cannon.x = 200;
@@ -135,6 +126,7 @@ class Game {
       if (Util.wallDetect(this.newBubble)) obj.speed[0] *= -1;
       if (this.collisionDetect()) {
         this.bubbles[this.newBubble.id] = this.newBubble;
+        this.gridSnap(this.newBubble)
         let destroy = this.checkNeighbors(this.newBubble).concat([this.newBubble.id])
         if (destroy.length >= 3) this.destroyBubbles(destroy)
         this.movingObjects = [];
@@ -150,8 +142,16 @@ class Game {
     }, this)
   }
 
-  gridSnap() {
-
+  gridSnap(bubble) {
+    var row = Math.round(bubble.sprite.y / 33)
+    bubble.sprite.y = row * 33
+    if (row % 2 === 0) {
+      var col = Math.round(bubble.sprite.x / 33)
+      bubble.sprite.x = col * 33
+    } else {
+      var col = Math.round((bubble.sprite.x - 16) / 33)
+      bubble.sprite.x = (col * 33) + 16
+    }
   }
 
   destroyBubbles(destroy) {
