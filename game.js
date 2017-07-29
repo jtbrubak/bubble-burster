@@ -157,7 +157,8 @@ class Game {
   }
 
   assignNeighbors(bubble) {
-    var deltas = bubble.pos[1] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas()
+    var deltas = bubble.pos[0] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas()
+    debugger
     deltas.forEach((delta) => {
       var neighborPos = [(bubble.pos[0] + delta[0]), (bubble.pos[1] + delta[1])]
       var neighborBubble = this.board.grid[neighborPos[0]][neighborPos[1]].bubble
@@ -223,7 +224,6 @@ class Game {
   }
 
   endGame(status) {
-    debugger
     createjs.Ticker.removeAllEventListeners()
     this.stage.removeAllChildren();
     var title = new createjs.Text(`YOU ${status}`, "36px Courier", "white");

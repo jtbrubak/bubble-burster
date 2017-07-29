@@ -280,7 +280,8 @@
 	    value: function assignNeighbors(bubble) {
 	      var _this3 = this;
 	
-	      var deltas = bubble.pos[1] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas();
+	      var deltas = bubble.pos[0] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas();
+	      debugger;
 	      deltas.forEach(function (delta) {
 	        var neighborPos = [bubble.pos[0] + delta[0], bubble.pos[1] + delta[1]];
 	        var neighborBubble = _this3.board.grid[neighborPos[0]][neighborPos[1]].bubble;
@@ -362,7 +363,6 @@
 	  }, {
 	    key: "endGame",
 	    value: function endGame(status) {
-	      debugger;
 	      createjs.Ticker.removeAllEventListeners();
 	      this.stage.removeAllChildren();
 	      var title = new createjs.Text("YOU " + status, "36px Courier", "white");
