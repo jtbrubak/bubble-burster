@@ -142,6 +142,7 @@ class Game {
   }
 
   gridSnap(bubble) {
+    debugger
     var row = Math.round(bubble.sprite.y / 33)
     bubble.sprite.y = row * 33
     if (row % 2 === 0) {
@@ -149,7 +150,8 @@ class Game {
       bubble.sprite.x = col * 33
     } else {
       var col = Math.round((bubble.sprite.x - 16) / 33)
-      bubble.sprite.x = (col * 33) + 16
+      bubble.sprite.x = col > 10 ? 346 : (col * 33) + 16
+      col = col > 10 ? 10 : col
     }
     bubble.pos = [row, col]
     this.board.grid[row][col].bubble = bubble.id
@@ -158,15 +160,29 @@ class Game {
 
   assignNeighbors(bubble) {
     var deltas = bubble.pos[0] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas()
-    debugger
     deltas.forEach((delta) => {
       var neighborPos = [(bubble.pos[0] + delta[0]), (bubble.pos[1] + delta[1])]
-      var neighborBubble = this.board.grid[neighborPos[0]][neighborPos[1]].bubble
-      if (neighborPos[0] >= 0 && neighborPos[1] >= 0 && neighborBubble !== null) {
-        bubble.neighbors.push(neighborBubble)
-        this.bubbles[neighborBubble].neighbors.push(bubble.id)
+      console.log(neighborPos)
+      if (this.validNeighbor(neighborPos)) {
+        var neighborBubble = this.getId(neighborPos)
+        if (neighborBubble !== null) {
+          bubble.neighbors.push(neighborBubble)
+          this.bubbles[neighborBubble].neighbors.push(bubble.id)
+        }
       }
     })
+  }
+
+  getId(pos) {
+    return this.board.grid[pos[0]][pos[1]].bubble
+  }
+
+  validNeighbor(pos) {
+    if (pos[0] < 0 || pos[1] < 0 || pos[1] > 11 ||
+        (pos[0] % 2 !== 1 && pos[1] > 10)) {
+          return false
+        }
+    else { return true }
   }
 
   destroyBubbles(destroy) {
