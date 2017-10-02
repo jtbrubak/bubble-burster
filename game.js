@@ -142,7 +142,6 @@ class Game {
   }
 
   gridSnap(bubble) {
-    debugger
     var row = Math.round(bubble.sprite.y / 33)
     bubble.sprite.y = row * 33
     if (row % 2 === 0) {
