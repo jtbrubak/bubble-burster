@@ -29,3 +29,29 @@ if (this.keys[39] && this.cannon.rotation <= 75) this.cannon.rotation += 3;
 ```
 
 ### Trajectory Calculation
+
+As a matter of fact, that aforementioned rotation property has more than one use. It also plays a key role in Bubble Burster's physics, in particular its trajectory calculation. When a new bubble is fired, the code uses the angle of the cannon's rotation to determine its path.
+
+```
+calculateXSpeed(cannon) {
+  if (cannon.rotation <= -45) return -4;
+  else if (cannon.rotation >= 45) return 4;
+  else return (cannon.rotation / 45) * 4;
+}
+
+calculateYSpeed(cannon) {
+  if (cannon.rotation >= -45 && cannon.rotation <= 45) return -4;
+  else if (cannon.rotation < -45) return ((90 + cannon.rotation) / 45) * -4;
+  else return ((90 - cannon.rotation) / 45) * -4;
+}
+```
+
+These values become the bubble's ```speed``` values, determining how the bubble will move on the x and y axes for each refresh of the canvas. Four is our baseline number of pixels per refresh, so the bubble will always move four pixels on at least one of the axes. Thus, if the cannon is pointed at exactly 45 degrees, the bubble will move equilaterally on the axes--for each refresh, it will move four pixels right and four pixels up. But we get a little trickier based on the angle of the cannon. If it's tilted at greater than 45 degrees in either direction, then it will move further on the x axis than the y axis for each refresh, and vice versa if it's tilted at less than 45 degrees in either direction.
+
+These values are also used to handle wall bouncing:
+
+```
+if (Util.wallDetect(this.newBubble)) obj.speed[0] *= -1;\
+```
+
+When the bubble hits a wall, its speed on the x axis is simply multiplied by -1, meaning it travels at the same rate on both axes, but in the opposite direction on the x.
