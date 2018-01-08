@@ -262,7 +262,6 @@
 	  }, {
 	    key: "gridSnap",
 	    value: function gridSnap(bubble) {
-	      debugger;
 	      var row = Math.round(bubble.sprite.y / 33);
 	      bubble.sprite.y = row * 33;
 	      if (row % 2 === 0) {
@@ -285,7 +284,6 @@
 	      var deltas = bubble.pos[0] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas();
 	      deltas.forEach(function (delta) {
 	        var neighborPos = [bubble.pos[0] + delta[0], bubble.pos[1] + delta[1]];
-	        console.log(neighborPos);
 	        if (_this3.validNeighbor(neighborPos)) {
 	          var neighborBubble = _this3.getId(neighborPos);
 	          if (neighborBubble !== null) {
@@ -303,7 +301,7 @@
 	  }, {
 	    key: "validNeighbor",
 	    value: function validNeighbor(pos) {
-	      if (pos[0] < 0 || pos[1] < 0 || pos[1] > 11 || pos[0] % 2 !== 1 && pos[1] > 10) {
+	      if (pos[0] < 0 || pos[1] < 0 || pos[1] > 11 || pos[0] % 2 === 1 && pos[1] > 10) {
 	        return false;
 	      } else {
 	        return true;

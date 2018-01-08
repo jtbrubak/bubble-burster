@@ -161,7 +161,6 @@ class Game {
     var deltas = bubble.pos[0] % 2 === 0 ? Util.evenDeltas() : Util.oddDeltas()
     deltas.forEach((delta) => {
       var neighborPos = [(bubble.pos[0] + delta[0]), (bubble.pos[1] + delta[1])]
-      console.log(neighborPos)
       if (this.validNeighbor(neighborPos)) {
         var neighborBubble = this.getId(neighborPos)
         if (neighborBubble !== null) {
@@ -178,7 +177,7 @@ class Game {
 
   validNeighbor(pos) {
     if (pos[0] < 0 || pos[1] < 0 || pos[1] > 11 ||
-        (pos[0] % 2 !== 1 && pos[1] > 10)) {
+        (pos[0] % 2 === 1 && pos[1] > 10)) {
           return false
         }
     else { return true }
